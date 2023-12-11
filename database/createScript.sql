@@ -1,22 +1,26 @@
 CREATE DATABASE swms CHARACTER SET "utf8mb4";
 USE swms;
-
 CREATE TABLE trashBin (
 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     lat DECIMAL(9, 6) NOT NULL,
     lon DECIMAL(9, 6) NOT NULL,
-    distance DECIMAL(1, 2) NOT NULL DEFAULT 0
+    distance DECIMAL(5, 2) NOT NULL DEFAULT 0
 );
 
 CREATE TABLE updates (
 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     trashBinId INT NOT NULL,
-    distanceUntilFull DECIMAL(1, 2) NOT NULL,
+    distance DECIMAL(5, 2) NOT NULL,
     timeOfUpdate TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE pickups (
 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    trashBinId INT NOT NULL,
     timeOfPickup TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE trashBinPickUps (
+	pickUpId INT NOT NULL,
+	trashBinId INT NOT NULL,
+    PRIMARY KEY (pickUpId, trashBinId)
 );
