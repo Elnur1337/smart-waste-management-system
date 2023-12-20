@@ -1,6 +1,6 @@
 //Libraries
 import { useState, useEffect } from 'react';
-import {useJsApiLoader, GoogleMap, Marker, InfoWindow} from '@react-google-maps/api';
+import {useJsApiLoader, GoogleMap, Marker, InfoWindow, DirectionsRenderer} from '@react-google-maps/api';
 import axios from 'axios';
 import io from 'socket.io-client';
 
@@ -25,6 +25,8 @@ const Map = () => {
     });
     const [trashBins, setTrashBins] = useState([]);
     const [selectedTrashBin, setSelectedTrashBin] = useState(null);
+    const [directionsRoute, setDirectionsRoute] = useState(null);
+
 
     useEffect(() => {
         const trashBinsData = async () => {
@@ -39,6 +41,8 @@ const Map = () => {
         return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
     }
 
+
+
     return isLoaded ? (
         <section className="map">
             <GoogleMap
@@ -46,13 +50,28 @@ const Map = () => {
                 zoom = {15}
                 mapContainerStyle = {{width: '100%', height: '100%'}}
                 options = {{mapId: "aa4a901015cd4d1a", mapTypeControl: false, streetViewControl: false, fullscreenControl: false}}
-                clickableIcons = {false}>
+                clickableIcons = {false}
+                onLoad={(map) => {
+                    const directionsService = new window.google.maps.DirectionsService();
+                    const getRoute = async () => {
+                        const result = await directionsService.route({
+                                                origin: {
+                                                    lat: 44.524018,
+                                                    lng: 18.642677
+                                                },
+                                                destination: mapCenter,
+                                                travelMode: window.google.maps.TravelMode.DRIVING
+                                            });
+                        setDirectionsRoute(result);
+                    }
+                    getRoute();
+                }}>
                 {trashBins ? trashBins.map((trashBin) => {
                     const position = {
                         lat: trashBin.lat,
                         lng: trashBin.lon
                     }
-                    if (trashBin.distance < 15) {
+                    if (trashBin.readyForPickup === 'Y') {
                         return (
                             <Marker
                                 key={trashBin.id}
@@ -90,6 +109,7 @@ const Map = () => {
                     onCloseClick={() => {setSelectedTrashBin(null)}}>
                         <h3 className='infoWindowPercent'>{scale(Math.floor(selectedTrashBin.distance), 100, 0, 0, 100)}% full</h3>
                 </InfoWindow>}
+                {directionsRoute && <DirectionsRenderer directions={directionsRoute}/>}
             </GoogleMap>
         </section>
     ) : <></>;
