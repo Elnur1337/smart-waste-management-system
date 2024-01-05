@@ -1,12 +1,10 @@
-//Components
-import Map from "./components/Map";
-import Navbar from "./components/Navbar";
+//Pages
+import HomePage from './pages/HomePage';
 
 const App = () => {
   return (
     <section className="app">
-      <Navbar/>
-      <Map/>
+      <HomePage/>
     </section>
   );
 }

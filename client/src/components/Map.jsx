@@ -1,9 +1,12 @@
 //Libraries
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {useJsApiLoader, GoogleMap, Marker, InfoWindow, DirectionsRenderer} from '@react-google-maps/api';
-import axios from 'axios';
 import io from 'socket.io-client';
 
+//Functions
+import scale from '../functions/scale'
+import getRoute from '../functions/getRoute';
+import getData from '../functions/getData';
 
 //Trash Bin Icons
 import trashBinRed from '../assets/trashBinRed.png';
@@ -13,59 +16,36 @@ import trashBinGreen from '../assets/trashBinGreen.png';
 const socket = io.connect('http://localhost:3001');
 
 const Map = () => {
+    //Google maps API variables
     const {isLoaded} = useJsApiLoader({
-        googleMapsApiKey: "AIzaSyDCP4SqRiSdvS_GqB8fH9VsnC1ACHqcOUc"
+        googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY
     });
 
+    //Refs
+    const mapCenter = useRef({lat: 44.537471, lng: 18.673469});
+
     //States
-    // eslint-disable-next-line
-    const [mapCenter, setMapCenter] = useState({
-        lat: 44.537471,
-        lng: 18.673469
-    });
     const [trashBins, setTrashBins] = useState([]);
     const [selectedTrashBin, setSelectedTrashBin] = useState(null);
     const [directionsRoute, setDirectionsRoute] = useState(null);
 
-
     useEffect(() => {
-        const trashBinsData = async () => {
-            const res = await axios.get('/getTrashBins');
-            const data = res.data;
-            setTrashBins(data);
-        }
-        trashBinsData();
+        (async function() {setTrashBins(await getData('/getTrashBins'))}());
     }, []);
-
-    const scale = (number, inMin, inMax, outMin, outMax) => {
-        return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
-    }
-
-
 
     return isLoaded ? (
         <section className="map">
             <GoogleMap
-                center = {mapCenter}
+                center = {mapCenter.current}
                 zoom = {15}
                 mapContainerStyle = {{width: '100%', height: '100%'}}
                 options = {{mapId: "aa4a901015cd4d1a", mapTypeControl: false, streetViewControl: false, fullscreenControl: false}}
                 clickableIcons = {false}
-                onLoad={(map) => {
+                onLoad={async (map) => {
                     const directionsService = new window.google.maps.DirectionsService();
-                    const getRoute = async () => {
-                        const result = await directionsService.route({
-                                                origin: {
-                                                    lat: 44.524018,
-                                                    lng: 18.642677
-                                                },
-                                                destination: mapCenter,
-                                                travelMode: window.google.maps.TravelMode.DRIVING
-                                            });
-                        setDirectionsRoute(result);
-                    }
-                    getRoute();
+                    setDirectionsRoute(await getRoute(directionsService, window.google.maps.TravelMode.DRIVING, mapCenter.current));
                 }}>
+                {/* DO OVDJE SAM DOSO DA FIXANJEM KODA */}
                 {trashBins ? trashBins.map((trashBin) => {
                     const position = {
                         lat: trashBin.lat,
