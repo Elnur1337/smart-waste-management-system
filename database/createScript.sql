@@ -13,3 +13,10 @@ CREATE TABLE trashBins (
     locationId INT NOT NULL,
     FOREIGN KEY (locationId) REFERENCES locations.id
 );
+
+CREATE TABLE updates (
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    trashBinId INT NOT NULL,
+    distance DECIMAL(5, 2) NOT NULL,
+    dateAndTime TIMESTAMP NOT NULL DEFAULT NOW()
+);
