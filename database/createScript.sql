@@ -4,7 +4,7 @@ CREATE TABLE locations (
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	lat DECIMAL(9, 6) NOT NULL,
     lng DECIMAL(9, 6) NOT NULL,
-    address VARCHAR(100) NOT NULL UNIQUE,
+    address VARCHAR(100) NOT NULL,
     locationDescription VARCHAR(100)
 );
 
@@ -17,7 +17,7 @@ CREATE TABLE trashBins (
 CREATE TABLE updates (
 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     trashBinId INT NOT NULL,
-    distance DECIMAL(5, 2) NOT NULL,
+    fillLevel TINYINT NOT NULL,
     dateAndTime TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
