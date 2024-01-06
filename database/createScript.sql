@@ -25,3 +25,9 @@ CREATE TABLE pickups (
 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     dateAndTime TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE trashBinsInPickups (
+	pickupId INT NOT NULL,
+	trashBinId INT NOT NULL,
+    PRIMARY KEY (pickUpId, trashBinId)
+);
