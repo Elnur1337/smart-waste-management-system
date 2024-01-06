@@ -9,14 +9,14 @@ CREATE TABLE locations (
 );
 
 CREATE TABLE trashBins (
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	id VARCHAR(16) NOT NULL PRIMARY KEY,
     locationId INT NOT NULL,
     FOREIGN KEY (locationId) REFERENCES locations(id)
 );
 
 CREATE TABLE updates (
 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    trashBinId INT NOT NULL,
+    trashBinId VARCHAR(16) NOT NULL,
     fillLevel TINYINT NOT NULL,
     dateAndTime TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -28,6 +28,6 @@ CREATE TABLE pickups (
 
 CREATE TABLE trashBinsInPickups (
 	pickupId INT NOT NULL,
-	trashBinId INT NOT NULL,
+	trashBinId VARCHAR(16) NOT NULL,
     PRIMARY KEY (pickUpId, trashBinId)
 );

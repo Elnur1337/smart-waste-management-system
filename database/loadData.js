@@ -3,6 +3,17 @@ const mysql = require('mysql');
 const fs = require('node:fs');
 const readline = require('readline');
 
+class Row {
+    constructor(dateAndTime, serial, fillLevel, address, lat, lng) {
+        this.dateAndTime = dateAndTime;
+        this.id = serial;
+        this.fillLevel = fillLevel;
+        this.address = address;
+        this.lat = lat;
+        this.lng = lng;
+    }
+}
+
 const database = mysql.createConnection({
     host: 'localhost',
     user: 'elnurdev',
@@ -27,17 +38,23 @@ async function processLineByLine() {
         }
         //Date and time
         pos = line.indexOf(',');
-        values.push(line.slice(0, pos));
+        const dateAndTime = line.slice(0, pos);
 
         line = line.slice(pos + 1, line.length);
+
+        //Serial
+        pos = line.indexOf(',');
+        const serial = line.slice(0, pos);
+
         pos = line.indexOf(',');
         line = line.slice(pos + 1, line.length);
         pos = line.indexOf(',');
         line = line.slice(pos + 1, line.length);
-        
+
+
         //Fill level
         pos = line.indexOf(',');
-        values.push(Number(line.slice(0, pos)));
+        const fillLevel = Number(line.slice(0, pos));
 
         line = line.slice(pos + 1, line.length);
         pos = line.indexOf(',');
@@ -53,20 +70,27 @@ async function processLineByLine() {
         //Address
         line = line.slice(1, line.length);
         pos = line.indexOf('"');
-        values.push(line.slice(0, pos));
+        const address = line.slice(0, pos);
         line = line.slice(pos + 2, line.length);
 
         //Lat and lng
         line = line.slice(1, line.length);
         pos = line.indexOf('"');
         let latLng = line.slice(0, pos);
-        pos = latLng.indexOf(',');
-        values.push(Number(latLng.slice(0, pos)));
-        latLng = latLng.slice(pos + 2, latLng.length);
-        values.push(Number(latLng));
 
-        values = [];
+        if (!latLng) {
+            continue;
+        }
+
+        pos = latLng.indexOf(',');
+        const lat = Number(latLng.slice(0, pos));
+        latLng = latLng.slice(pos + 2, latLng.length);
+        const lng = Number(latLng);
+        
+        values.push(new Row(dateAndTime, serial, fillLevel, address, lat, lng));
+        
     }
+        
         console.log(values);
 }
 
