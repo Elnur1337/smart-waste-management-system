@@ -11,7 +11,7 @@ CREATE TABLE locations (
 CREATE TABLE trashBins (
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     locationId INT NOT NULL,
-    FOREIGN KEY (locationId) REFERENCES locations.id
+    FOREIGN KEY (locationId) REFERENCES locations(id)
 );
 
 CREATE TABLE updates (
