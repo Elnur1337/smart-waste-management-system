@@ -7,3 +7,9 @@ CREATE TABLE locations (
     locationName VARCHAR(25) NOT NULL UNIQUE,
     locationDescription VARCHAR(100)
 );
+
+CREATE TABLE trashBins (
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    locationId INT NOT NULL,
+    FOREIGN KEY (locationId) REFERENCES locations.id
+);
