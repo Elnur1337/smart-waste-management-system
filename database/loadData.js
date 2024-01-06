@@ -86,12 +86,63 @@ async function processLineByLine() {
         const lat = Number(latLng.slice(0, pos));
         latLng = latLng.slice(pos + 2, latLng.length);
         const lng = Number(latLng);
-        
+
         values.push(new Row(dateAndTime, serial, fillLevel, address, lat, lng));
         
     }
         
-        console.log(values);
+    console.log(values);
+
+    let inputs = [];
+
+    values.forEach((row) => {
+        if (!inputs.includes(row.address)) {
+            inputs.push(row.address);
+            database.query('INSERT INTO locations(lat, lng, address) VALUES (?, ?, ?)', [row.lat, row.lng, row.address], (err, res) => {
+                if (err) {
+                    console.log(err);
+                }
+                if (res) {
+                    console.log(res);
+                }
+            });
+        }
+    });
+
+    inputs = [];
+
+    values.forEach((row) => {
+        if (!inputs.includes(row.id)) {
+            inputs.push(row.id);
+            database.query('SELECT id FROM locations WHERE address = ?', [row.address], (err, res) => {
+                if (err) {
+                    console.log(err);
+                }
+                database.query('INSERT INTO trashBins(id, locationId) VALUES (?, ?)', [row.id, res[0].id], (err, res) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                    if (res) {
+                        console.log(res);
+                    }
+                });
+            });
+        }
+    });
+
+    inputs = [];
+    setTimeout(() => {
+        values.forEach((row) => {
+            database.query('INSERT INTO updates(trashBinId, fillLevel, dateAndTime) VALUES (?, ?, ?)', [row.id, row.fillLevel, row.dateAndTime], (err, res) => {
+                if (err) {
+                    console.log(err);
+                }
+                if (res) {
+                    console.log(res);
+                }
+            });
+        });
+    }, 10000);
 }
 
 processLineByLine();
