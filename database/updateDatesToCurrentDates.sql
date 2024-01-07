@@ -1,0 +1,10 @@
+USE swms;
+
+CREATE TEMPORARY TABLE updates2 AS SELECT * FROM updates;
+
+DELETE FROM updates WHERE id = 20923;
+
+UPDATE updates
+SET dateAndTime = DATE_ADD(dateAndTime, INTERVAL TO_DAYS(DATE_ADD(NOW(), INTERVAL -TO_DAYS((SELECT MAX(dateAndTime) FROM updates2)) DAY)) DAY);
+
+DROP TABLE updates2;
