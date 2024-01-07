@@ -34,7 +34,7 @@ BEGIN
         locations.address,
         lastUpdates.fillLevel,
         trashBinsLastPickup.dateAndTime,
-        IF(lastUpdates.fillLevel >= 75 OR trashBinsLastPickup.dateAndTime < DATE_ADD(NOW(), INTERVAL -2 DAY), "Y", "N") AS readyForPickup,
+        IF(lastUpdates.fillLevel >= 75 OR (lastUpdates.fillLevel != 0 AND trashBinsLastPickup.dateAndTime < DATE_ADD(NOW(), INTERVAL -2 DAY)), "Y", "N") AS readyForPickup,
         lastUpdates.dateAndTime AS lastUpdate,
         IF(lastUpdates.dateAndTime < DATE_ADD(NOW(), INTERVAL -2 DAY), "Y", "N") AS possibleBreak
 	FROM trashBins
