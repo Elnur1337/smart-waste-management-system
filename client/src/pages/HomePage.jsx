@@ -1,12 +1,30 @@
+import React, { useState, useRef } from "react";
+
 //Components
 import Navbar from "../components/Navbar";
 import Map from "../components/Map";
+import Alerts from "../components/Alerts";
+import MapControls from "../components/MapControls";
+
+export const directionsContext = React.createContext();
 
 const HomePage = () => {
+    //States
+    const [trashBins, setTrashBins] = useState([]);
+    const [directionsRoute, setDirectionsRoute] = useState(null);
+
+    //Refs
+    const directionsService = useRef(null);
+    const drivingTravelMode = useRef(null);
+
     return (
         <>
             <Navbar/>
-            <Map/>
+            <directionsContext.Provider value={[directionsRoute, setDirectionsRoute, directionsService, drivingTravelMode, trashBins, setTrashBins]}>
+                <Alerts/>
+                <Map/>
+                <MapControls/>
+            </directionsContext.Provider>
         </>
     );
 }

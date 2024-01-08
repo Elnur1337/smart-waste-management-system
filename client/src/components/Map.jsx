@@ -1,12 +1,14 @@
 //Libraries
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import {useJsApiLoader, GoogleMap, Marker, InfoWindow, DirectionsRenderer} from '@react-google-maps/api';
 import io from 'socket.io-client';
 
+//Context
+import { directionsContext } from '../pages/HomePage';
+
 //Functions
-import scale from '../functions/scale'
-import getRoute from '../functions/getRoute';
 import getData from '../functions/getData';
+
 
 //Trash Bin Icons
 import trashBinRed from '../assets/trashBinRed.png';
@@ -25,74 +27,112 @@ const Map = () => {
     const mapCenter = useRef({lat: 44.537471, lng: 18.673469});
 
     //States
-    const [trashBins, setTrashBins] = useState([]);
+    const [realTrashBins, setRealTrashBins] = useState([]);
     const [selectedTrashBin, setSelectedTrashBin] = useState(null);
-    const [directionsRoute, setDirectionsRoute] = useState(null);
 
+    //useContext Vars
+    const contextVars = useContext(directionsContext);
+    const directionsRoute  = contextVars[0];
+    const directionsService = contextVars[2];
+    const drivingTravelMode = contextVars[3];
+    const trashBins = contextVars[4];
+    const setTrashBins = contextVars[5];
+    
     useEffect(() => {
         (async function() {setTrashBins(await getData('/getTrashBins'))}());
+        // eslint-disable-next-line
     }, []);
-
-    return isLoaded ? (
-        <section className="map">
+    
+    useEffect(() => {
+        let trashBinsFiltered = [];
+        trashBins.forEach((trashBin, index) => {
+            if (index === 0) {
+                trashBinsFiltered.push(trashBin);
+            } else {
+                trashBinsFiltered.forEach((trashBinF, index) => {
+                    if (trashBinF.lat === trashBin.lat && trashBinF.lng === trashBin.lng) {
+                        if (!trashBinF.readyForPickup === "Y") {
+                            if (trashBin.readyForPickup === "Y") {
+                                trashBinF.readyForPickup = "Y";
+                            }
+                            if (trashBin.fillLevel > trashBinF.fillLevel) {
+                                trashBinF.fillLevel = trashBin.fillLevel;
+                            }
+                        }
+                    } else {
+                        if (index === trashBinsFiltered.length - 1) {
+                            trashBinsFiltered.push(trashBin);
+                        }
+                    }
+                });
+            }
+        });
+        setRealTrashBins(trashBinsFiltered);
+    }, [trashBins]);
+    
+    return isLoaded && (
+        <section className='map'>
             <GoogleMap
                 center = {mapCenter.current}
                 zoom = {15}
                 mapContainerStyle = {{width: '100%', height: '100%'}}
                 options = {{mapId: "aa4a901015cd4d1a", mapTypeControl: false, streetViewControl: false, fullscreenControl: false}}
                 clickableIcons = {false}
-                onLoad={async (map) => {
-                    const directionsService = new window.google.maps.DirectionsService();
-                    setDirectionsRoute(await getRoute(directionsService, window.google.maps.TravelMode.DRIVING, mapCenter.current));
-                }}>
-                {/* DO OVDJE SAM DOSO DA FIXANJEM KODA */}
-                {trashBins ? trashBins.map((trashBin) => {
-                    const position = {
-                        lat: trashBin.lat,
-                        lng: trashBin.lon
+                onLoad={() => {
+                    directionsService.current = new window.google.maps.DirectionsService();
+                    drivingTravelMode.current = window.google.maps.TravelMode.DRIVING;
+                }}
+                onClick={() => {
+                    if (selectedTrashBin !== null) {
+                        setSelectedTrashBin(null);
                     }
-                    if (trashBin.readyForPickup === 'Y') {
+                }}>
+                {realTrashBins && realTrashBins.map((trashBin) => {
+                    if (trashBin.readyForPickup === "Y") {
                         return (
                             <Marker
                                 key={trashBin.id}
-                                position={position}
-                                icon={{url: trashBinRed, scaledSize: {width: 30, height: 30}}}
+                                position={{lat: trashBin.lat, lng: trashBin.lng}}
+                                icon={{url: trashBinRed, scaledSize: {width: 25, height: 25}}}
                                 onClick={() => {setSelectedTrashBin(trashBin)}}>
                             </Marker>
                         );
                     } else if (trashBin.distance < 50) {
-                        return (
-                            <Marker
-                                key={trashBin.id}
-                                position={position}
-                                icon={{url: trashBinYellow, scaledSize: {width: 30, height: 30}}}
-                                onClick={() => {setSelectedTrashBin(trashBin)}}>
-                            </Marker>
-                        );
-                    } else {
-                        return (
-                            <Marker
-                                key={trashBin.id}
-                                position={position}
-                                icon={{url: trashBinGreen, scaledSize: {width: 30, height: 30}}}
-                                onClick={() => {setSelectedTrashBin(trashBin)}}>
-                            </Marker>
-                        );
-                    }
-                }) : <></>}
+                            return (
+                                <Marker
+                                    key={trashBin.id}
+                                    position={{lat: trashBin.lat, lng: trashBin.lng}}
+                                    icon={{url: trashBinYellow, scaledSize: {width: 25, height: 25}}}
+                                    onClick={() => {setSelectedTrashBin(trashBin)}}>
+                                </Marker>
+                            );
+                        } else {
+                            return (
+                                <Marker
+                                    key={trashBin.id}
+                                    position={{lat: trashBin.lat, lng: trashBin.lng}}
+                                    icon={{url: trashBinGreen, scaledSize: {width: 25, height: 25}}}
+                                    onClick={() => {setSelectedTrashBin(trashBin)}}>
+                                </Marker>
+                            );
+                        }
+                })}
                 {selectedTrashBin && 
                 <InfoWindow
                     position={{
                         lat: selectedTrashBin.lat,
-                        lng: selectedTrashBin.lon
+                        lng: selectedTrashBin.lng
                     }}
                     onCloseClick={() => {setSelectedTrashBin(null)}}>
-                        <h3 className='infoWindowPercent'>{scale(Math.floor(selectedTrashBin.distance), 100, 0, 0, 100)}% full</h3>
+                        <div>
+                            <h2>{`${selectedTrashBin.address}`}</h2>
+                            <h3 className='infoWindowPercent'>{`${selectedTrashBin.fillLevel}%`}</h3>
+                        </div>
                 </InfoWindow>}
                 {directionsRoute && <DirectionsRenderer directions={directionsRoute}/>}
             </GoogleMap>
         </section>
-    ) : <></>;
+    );
 }
 
 export default Map;
