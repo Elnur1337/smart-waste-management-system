@@ -37,39 +37,40 @@ npm install
 node loadData.js
 ```
 7. Run `updateDatesToCurrentDates.sql` in MySQL Workbench.
-8. Navigate to `./database/storedFunctionsAndProcedures`
+8. Run `updateLocations.sql` in MySQL Workbench.
+9. Navigate to `./database/storedFunctionsAndProcedures`
 ```
 cd ./database/storedFunctionsAndProcedures
 ```
-9. Run `trashBinsCurrentState.sql` in MySQL Workbench.
-10. Navigate to `../../client`
+10. Run `trashBinsCurrentState.sql` in MySQL Workbench.
+11. Navigate to `../../client`
 ```
 cd ../../client
 ```
-11. Run `npm install command`
+12. Run `npm install command`
 ```
 npm install
 ```
-12. Replace Google Maps API key in `Map.jsx` with your key.
-13. Open second terminal.
-14. In second terminal navigate to `./server`
+13. Replace Google Maps API key in `Map.jsx` with your key.
+14. Open second terminal.
+15. In second terminal navigate to `./server`
 ```
 cd ./server
 ```
-15. In second terminal run `npm install` command
+16. In second terminal run `npm install` command
 ```
 npm install
 ```
-16. Replace MySQL config in `./server/database/dbConfig.js` with your config.
-17. In first terminal run `npm start` command
+17. Replace MySQL config in `./server/database/dbConfig.js` with your config.
+18. In first terminal run `npm start` command
 ```
 npm start
 ```
-18. In second terminal run `npm start` command
+19. In second terminal run `npm start` command
 ```
 npm start
 ```
-19. Open your browser and navigate to `http://localhost:3000/`.
+20. Open your browser and navigate to `http://localhost:3000/`.
 
 ## Arduino setup (Optional)
 To be added
