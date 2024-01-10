@@ -23,6 +23,7 @@ const getRoute = async (directionsService, travelMode, trashBinsArg) => {
 
     for (let i = 0; i < length; ++i) {
         let closest = -1, closestValue;
+        // eslint-disable-next-line
         trashBins.forEach((trashBin, index) => {
             let tempRes;
             if (i === 0) {

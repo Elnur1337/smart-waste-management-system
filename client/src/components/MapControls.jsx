@@ -15,7 +15,7 @@ const MapControls = () => {
 
     return (
         <>
-            <button onClick={async () => {setDirectionsRoute(await getRoute(directionsService.current, drivingTravelMode.current, trashBins))}}>Generate route</button>
+            <button className="getRouteBtn" onClick={async () => {setDirectionsRoute(await getRoute(directionsService.current, drivingTravelMode.current, trashBins))}}>Generate route</button>
         </>
     );
 }
