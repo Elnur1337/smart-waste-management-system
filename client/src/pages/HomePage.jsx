@@ -11,6 +11,7 @@ export const directionsContext = React.createContext();
 const HomePage = () => {
     //States
     const [trashBins, setTrashBins] = useState([]);
+    const [realTrashBins, setRealTrashBins] = useState([]);
     const [directionsRoute, setDirectionsRoute] = useState(null);
 
     //Refs
@@ -20,7 +21,7 @@ const HomePage = () => {
     return (
         <>
             <Navbar/>
-            <directionsContext.Provider value={[directionsRoute, setDirectionsRoute, directionsService, drivingTravelMode, trashBins, setTrashBins]}>
+            <directionsContext.Provider value={[directionsRoute, setDirectionsRoute, directionsService, drivingTravelMode, trashBins, setTrashBins, realTrashBins, setRealTrashBins]}>
                 <Alerts/>
                 <Map/>
                 <MapControls/>

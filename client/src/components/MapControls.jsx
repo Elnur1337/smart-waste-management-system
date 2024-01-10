@@ -11,10 +11,11 @@ const MapControls = () => {
     const setDirectionsRoute = contextVars[1];
     const directionsService = contextVars[2];
     const drivingTravelMode = contextVars[3];
+    const trashBins = contextVars[6];
 
     return (
         <>
-            <button onClick={async () => {setDirectionsRoute(await getRoute(directionsService.current, drivingTravelMode.current))}}>Generate route</button>
+            <button onClick={async () => {setDirectionsRoute(await getRoute(directionsService.current, drivingTravelMode.current, trashBins))}}>Generate route</button>
         </>
     );
 }

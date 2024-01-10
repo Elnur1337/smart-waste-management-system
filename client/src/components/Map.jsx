@@ -27,7 +27,7 @@ const Map = () => {
     const mapCenter = useRef({lat: 44.537471, lng: 18.673469});
 
     //States
-    const [realTrashBins, setRealTrashBins] = useState([]);
+    
     const [selectedTrashBin, setSelectedTrashBin] = useState(null);
 
     //useContext Vars
@@ -37,6 +37,8 @@ const Map = () => {
     const drivingTravelMode = contextVars[3];
     const trashBins = contextVars[4];
     const setTrashBins = contextVars[5];
+    const realTrashBins = contextVars[6];
+    const setRealTrashBins = contextVars[7];
     
     useEffect(() => {
         (async function() {setTrashBins(await getData('/getTrashBins'))}());
@@ -68,6 +70,7 @@ const Map = () => {
             }
         });
         setRealTrashBins(trashBinsFiltered);
+        // eslint-disable-next-line
     }, [trashBins]);
     
     return isLoaded && (
